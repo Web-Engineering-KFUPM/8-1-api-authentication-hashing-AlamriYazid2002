@@ -292,7 +292,6 @@ app.post("/login", async (req, res) => {
     if(!match){
       return res.status(400).json({ error: "Wrong password" });
     }
-    return res.status(201).json({message : "Logged in successfully!"});
     const token = jwt.sign(
       {email},
       JWT_SECRET,          
