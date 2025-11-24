@@ -279,8 +279,33 @@ app.post("/register", async (req, res) => {
 // =========================
 app.post("/login", async (req, res) => {
   // Implement logic here based on the TODO 2.
-  const {email, password} = req.body
+  try{
+    const { email, password } = req.body || {};
+    if(!email || !password){
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+    const existing = users.find((u) => u.email === email);
+    if(!existing){
+      return res.status(400).json({ error: "User not found" });
+    }
+    const match = await bcrypt.compare(password, user.passwordHash);
+    if(!match){
+      return res.status(400).json({ error: "Wrong password" });
+    }
+    return res.status(201).json({message : "Logged in successfully!"});
+    const token = jwt.sign(
+      {email},
+      JWT_SECRET,          
+      {expiresIn: "1h"}
+    );
+    return res.json({ token });
+  }
+  catch{
+    return res.status(500).json({ error: "Server error during login" });
+  }
+  
 });
+
 
 // =========================
 // Protected Weather API
